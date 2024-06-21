@@ -226,10 +226,10 @@ where
     ///
     /// let s = ThreeDigitString::new(String::from("123"));
     ///
-    /// assert_eq!(String::from("123"), s.unwrap().to_inner());
+    /// assert_eq!(&String::from("123"), s.unwrap().to_inner());
     /// ```
-    pub fn to_inner(&self) -> T {
-        self.0.clone()
+    pub fn to_inner(&self) -> &T {
+        &self.0
     }
 }
 

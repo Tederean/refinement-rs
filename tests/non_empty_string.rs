@@ -14,7 +14,7 @@ type NonEmptyString = Refinement<String, NonEmptyStringPredicate>;
 #[test]
 fn create_good_value() {
     let x = NonEmptyString::new(String::from("Hello"));
-    assert_eq!(Some(String::from("Hello")), x.map(|x| x.to_inner()))
+    assert_eq!(Some(String::from("Hello")), x.map(|x| x.to_inner().clone()))
 }
 
 #[test]
