@@ -47,11 +47,11 @@
 //! ```
 //! [^1]: https://en.wikipedia.org/wiki/Refinement_type
 
-use std::borrow::Borrow;
-use std::convert::AsRef;
-use std::fmt;
-use std::marker::PhantomData;
-use std::ops::{
+use core::borrow::Borrow;
+use core::convert::AsRef;
+use core::fmt;
+use core::marker::PhantomData;
+use core::ops::{
     Add, BitAnd, BitOr, BitXor, Bound, Div, Index, Mul, Neg, Not, RangeBounds, Rem, Shl, Shr, Sub,
 };
 
@@ -117,7 +117,7 @@ where
 {
     /// Create a refined value from the underlying type `T`.
     ///
-    /// Returns `x` under the refinement type if `x` satisfies `P`, otherwise returns [`None`](std::option::Option::None).
+    /// Returns `x` under the refinement type if `x` satisfies `P`, otherwise returns [`None`](core::option::Option::None).
     ///
     /// # Examples
     ///
@@ -174,11 +174,11 @@ where
     }
 }
 
-impl<T, P> std::fmt::Debug for Refinement<T, P>
+impl<T, P> fmt::Debug for Refinement<T, P>
 where
-    T: std::fmt::Debug
+    T: fmt::Debug
 {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> fmt::Result {
         f.debug_tuple("Refinement")
             .field(&self.0) // : T
             .field(&format_args!("_")) // : PhantomData<P>
@@ -194,7 +194,7 @@ impl<T: Clone, P> Clone for Refinement<T, P> {
 
 impl<T: Copy, P> Copy for Refinement<T, P> {}
 
-impl<T, P> std::ops::Deref for Refinement<T, P> {
+impl<T, P> core::ops::Deref for Refinement<T, P> {
     type Target = T;
 
     fn deref(&self) -> &Self::Target {
@@ -202,7 +202,7 @@ impl<T, P> std::ops::Deref for Refinement<T, P> {
     }
 }
 
-impl<T, P> std::ops::DerefMut for Refinement<T, P> {
+impl<T, P> core::ops::DerefMut for Refinement<T, P> {
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.0
     }
