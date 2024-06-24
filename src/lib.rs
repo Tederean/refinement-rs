@@ -1,3 +1,5 @@
+#![no_std]
+
 //! Convenient creation of type-safe refinement types.
 //!
 //! This crate tries to capture the idea of a refinement type, which
