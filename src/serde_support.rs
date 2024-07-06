@@ -142,7 +142,7 @@ impl<'de, T, P> Deserialize<'de> for Refinement<T, P>
         if P::test(&value) {
             Ok(Refinement(value, PhantomData))
         } else {
-            Err(Error::custom(format!("Value does not fulfil the requirements of {0}.", type_name::<Refinement<T, P>>())))
+            Err(Error::custom(format!("Value does not fulfil the requirements of {0}.", type_name::<P>())))
         }
     }
 }
