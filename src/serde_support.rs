@@ -1,3 +1,4 @@
+use core::any::type_name;
 use core::borrow::Borrow;
 use core::convert::AsRef;
 use core::fmt;
@@ -5,8 +6,7 @@ use core::marker::PhantomData;
 use core::ops::{
     Add, BitAnd, BitOr, BitXor, Bound, Div, Index, Mul, Neg, Not, RangeBounds, Rem, Shl, Shr, Sub,
 };
-use core::any::type_name;
-use serde::{Serialize, Deserialize, Deserializer, de::Error};
+use serde::{de::Error, Deserialize, Deserializer, Serialize};
 
 /// A `Predicate` tests if a value satisfies a particular refinement type.
 ///
@@ -61,13 +61,13 @@ pub trait Predicate<T>: Sync {
 /// let y = LessThanTenInt::new(11);
 /// assert!(y.is_none());
 /// ```
-#[derive(Serialize, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Refinement<T, P: Predicate<T> + Sync>(T, PhantomData<P>);
 
 impl<T, P> Refinement<T, P>
-    where
-        T: Serialize + for<'de> Deserialize<'de>,
-        P: Predicate<T> + Sync,
+where
+    T: Serialize + for<'de> Deserialize<'de>,
+    P: Predicate<T> + Sync,
 {
     /// Create a refined value from the underlying type `T`.
     ///
@@ -128,28 +128,46 @@ impl<T, P> Refinement<T, P>
     }
 }
 
-impl<'de, T, P> Deserialize<'de> for Refinement<T, P>
+impl<'de, T, P> Serialize for Refinement<T, P>
+where
+    T: Deserialize<'de> + Serialize,
+    P: Predicate<T> + Sync,
+{
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
-        T: Deserialize<'de> + Serialize,
-        P: Predicate<T> + Sync,
+        S: serde::Serializer,
+    {
+        self.0.serialize(serializer)
+    }
+}
+
+impl<'de, T, P> Deserialize<'de> for Refinement<T, P>
+where
+    T: Deserialize<'de> + Serialize,
+    P: Predicate<T> + Sync,
 {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-        where
-            D: Deserializer<'de>,
+    where
+        D: Deserializer<'de>,
     {
         let value = T::deserialize(deserializer)?;
 
         if P::test(&value) {
             Ok(Refinement(value, PhantomData))
         } else {
-            Err(Error::custom(format!("Value does not fulfil the requirements of {0}.", type_name::<P>())))
+            Err(Error::custom(format!(
+                "Value of type {0} does not fulfil the requirements of {1}.",
+                type_name::<T>(),
+                type_name::<P>()
+            )))
         }
     }
 }
 
 impl<T, P> fmt::Debug for Refinement<T, P>
-    where
-        T: fmt::Debug, P: Predicate<T>
+where
+    T: fmt::Debug,
+    P: Predicate<T>,
 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_tuple("Refinement")
@@ -187,9 +205,9 @@ where
 }
 
 impl<T: Serialize + for<'de> Deserialize<'de>, P> Add for Refinement<T, P>
-    where
-        T: Add<Output = T>,
-        P: Predicate<T>,
+where
+    T: Add<Output = T>,
+    P: Predicate<T>,
 {
     type Output = Option<Self>;
     fn add(self, rhs: Self) -> Self::Output {
@@ -198,9 +216,9 @@ impl<T: Serialize + for<'de> Deserialize<'de>, P> Add for Refinement<T, P>
 }
 
 impl<T: Serialize + for<'de> Deserialize<'de>, P> BitAnd<T> for Refinement<T, P>
-    where
-        T: BitAnd<Output = T>,
-        P: Predicate<T>,
+where
+    T: BitAnd<Output = T>,
+    P: Predicate<T>,
 {
     type Output = Option<Self>;
     fn bitand(self, rhs: T) -> Self::Output {
@@ -209,9 +227,9 @@ impl<T: Serialize + for<'de> Deserialize<'de>, P> BitAnd<T> for Refinement<T, P>
 }
 
 impl<T: Serialize + for<'de> Deserialize<'de>, P> BitAnd for Refinement<T, P>
-    where
-        T: BitAnd<Output = T>,
-        P: Predicate<T>,
+where
+    T: BitAnd<Output = T>,
+    P: Predicate<T>,
 {
     type Output = Option<Self>;
     fn bitand(self, rhs: Self) -> Self::Output {
@@ -220,9 +238,9 @@ impl<T: Serialize + for<'de> Deserialize<'de>, P> BitAnd for Refinement<T, P>
 }
 
 impl<T: Serialize + for<'de> Deserialize<'de>, P> BitOr<T> for Refinement<T, P>
-    where
-        T: BitOr<Output = T>,
-        P: Predicate<T>,
+where
+    T: BitOr<Output = T>,
+    P: Predicate<T>,
 {
     type Output = Option<Self>;
     fn bitor(self, rhs: T) -> Self::Output {
@@ -231,9 +249,9 @@ impl<T: Serialize + for<'de> Deserialize<'de>, P> BitOr<T> for Refinement<T, P>
 }
 
 impl<T: Serialize + for<'de> Deserialize<'de>, P> BitOr for Refinement<T, P>
-    where
-        T: BitOr<Output = T>,
-        P: Predicate<T>,
+where
+    T: BitOr<Output = T>,
+    P: Predicate<T>,
 {
     type Output = Option<Self>;
     fn bitor(self, rhs: Self) -> Self::Output {
@@ -242,9 +260,9 @@ impl<T: Serialize + for<'de> Deserialize<'de>, P> BitOr for Refinement<T, P>
 }
 
 impl<T: Serialize + for<'de> Deserialize<'de>, P> BitXor<T> for Refinement<T, P>
-    where
-        T: BitXor<Output = T>,
-        P: Predicate<T>,
+where
+    T: BitXor<Output = T>,
+    P: Predicate<T>,
 {
     type Output = Option<Self>;
     fn bitxor(self, rhs: T) -> Self::Output {
@@ -253,9 +271,9 @@ impl<T: Serialize + for<'de> Deserialize<'de>, P> BitXor<T> for Refinement<T, P>
 }
 
 impl<T: Serialize + for<'de> Deserialize<'de>, P> BitXor for Refinement<T, P>
-    where
-        T: BitXor<Output = T>,
-        P: Predicate<T>,
+where
+    T: BitXor<Output = T>,
+    P: Predicate<T>,
 {
     type Output = Option<Self>;
     fn bitxor(self, rhs: Self) -> Self::Output {
@@ -264,9 +282,9 @@ impl<T: Serialize + for<'de> Deserialize<'de>, P> BitXor for Refinement<T, P>
 }
 
 impl<T: Serialize + for<'de> Deserialize<'de>, P> Div<T> for Refinement<T, P>
-    where
-        T: Div<Output = T>,
-        P: Predicate<T>,
+where
+    T: Div<Output = T>,
+    P: Predicate<T>,
 {
     type Output = Option<Self>;
     fn div(self, rhs: T) -> Self::Output {
@@ -275,9 +293,9 @@ impl<T: Serialize + for<'de> Deserialize<'de>, P> Div<T> for Refinement<T, P>
 }
 
 impl<T: Serialize + for<'de> Deserialize<'de>, P> Div for Refinement<T, P>
-    where
-        T: Div<Output = T>,
-        P: Predicate<T>,
+where
+    T: Div<Output = T>,
+    P: Predicate<T>,
 {
     type Output = Option<Self>;
     fn div(self, rhs: Self) -> Self::Output {
@@ -286,9 +304,9 @@ impl<T: Serialize + for<'de> Deserialize<'de>, P> Div for Refinement<T, P>
 }
 
 impl<T: Serialize + for<'de> Deserialize<'de>, P> Mul<T> for Refinement<T, P>
-    where
-        T: Mul<Output = T>,
-        P: Predicate<T>,
+where
+    T: Mul<Output = T>,
+    P: Predicate<T>,
 {
     type Output = Option<Self>;
     fn mul(self, rhs: T) -> Self::Output {
@@ -297,9 +315,9 @@ impl<T: Serialize + for<'de> Deserialize<'de>, P> Mul<T> for Refinement<T, P>
 }
 
 impl<T: Serialize + for<'de> Deserialize<'de>, P> Mul for Refinement<T, P>
-    where
-        T: Mul<Output = T>,
-        P: Predicate<T>,
+where
+    T: Mul<Output = T>,
+    P: Predicate<T>,
 {
     type Output = Option<Self>;
     fn mul(self, rhs: Self) -> Self::Output {
@@ -308,9 +326,9 @@ impl<T: Serialize + for<'de> Deserialize<'de>, P> Mul for Refinement<T, P>
 }
 
 impl<T: Serialize + for<'de> Deserialize<'de>, P> Neg for Refinement<T, P>
-    where
-        T: Neg<Output = T>,
-        P: Predicate<T>,
+where
+    T: Neg<Output = T>,
+    P: Predicate<T>,
 {
     type Output = Option<Self>;
     fn neg(self) -> Self::Output {
@@ -319,9 +337,9 @@ impl<T: Serialize + for<'de> Deserialize<'de>, P> Neg for Refinement<T, P>
 }
 
 impl<T: Serialize + for<'de> Deserialize<'de>, P> Not for Refinement<T, P>
-    where
-        T: Not<Output = T>,
-        P: Predicate<T>,
+where
+    T: Not<Output = T>,
+    P: Predicate<T>,
 {
     type Output = Option<Self>;
     fn not(self) -> Self::Output {
@@ -341,9 +359,9 @@ where
 }
 
 impl<T: Serialize + for<'de> Deserialize<'de>, P> Rem for Refinement<T, P>
-    where
-        T: Rem<Output = T>,
-        P: Predicate<T>,
+where
+    T: Rem<Output = T>,
+    P: Predicate<T>,
 {
     type Output = Option<Self>;
     fn rem(self, rhs: Self) -> Self::Output {
@@ -352,9 +370,9 @@ impl<T: Serialize + for<'de> Deserialize<'de>, P> Rem for Refinement<T, P>
 }
 
 impl<T: Serialize + for<'de> Deserialize<'de>, P> Shl<T> for Refinement<T, P>
-    where
-        T: Shl<Output = T>,
-        P: Predicate<T>,
+where
+    T: Shl<Output = T>,
+    P: Predicate<T>,
 {
     type Output = Option<Self>;
     fn shl(self, rhs: T) -> Self::Output {
@@ -363,9 +381,9 @@ impl<T: Serialize + for<'de> Deserialize<'de>, P> Shl<T> for Refinement<T, P>
 }
 
 impl<T: Serialize + for<'de> Deserialize<'de>, P> Shl for Refinement<T, P>
-    where
-        T: Shl<Output = T>,
-        P: Predicate<T>,
+where
+    T: Shl<Output = T>,
+    P: Predicate<T>,
 {
     type Output = Option<Self>;
     fn shl(self, rhs: Self) -> Self::Output {
@@ -374,9 +392,9 @@ impl<T: Serialize + for<'de> Deserialize<'de>, P> Shl for Refinement<T, P>
 }
 
 impl<T: Serialize + for<'de> Deserialize<'de>, P> Shr<T> for Refinement<T, P>
-    where
-        T: Shr<Output = T>,
-        P: Predicate<T>,
+where
+    T: Shr<Output = T>,
+    P: Predicate<T>,
 {
     type Output = Option<Self>;
     fn shr(self, rhs: T) -> Self::Output {
@@ -385,9 +403,9 @@ impl<T: Serialize + for<'de> Deserialize<'de>, P> Shr<T> for Refinement<T, P>
 }
 
 impl<T: Serialize + for<'de> Deserialize<'de>, P> Shr for Refinement<T, P>
-    where
-        T: Shr<Output = T>,
-        P: Predicate<T>,
+where
+    T: Shr<Output = T>,
+    P: Predicate<T>,
 {
     type Output = Option<Self>;
     fn shr(self, rhs: Self) -> Self::Output {
@@ -396,9 +414,9 @@ impl<T: Serialize + for<'de> Deserialize<'de>, P> Shr for Refinement<T, P>
 }
 
 impl<T: Serialize + for<'de> Deserialize<'de>, P> Sub<T> for Refinement<T, P>
-    where
-        T: Sub<Output = T>,
-        P: Predicate<T>,
+where
+    T: Sub<Output = T>,
+    P: Predicate<T>,
 {
     type Output = Option<Self>;
     fn sub(self, rhs: T) -> Self::Output {
@@ -407,9 +425,9 @@ impl<T: Serialize + for<'de> Deserialize<'de>, P> Sub<T> for Refinement<T, P>
 }
 
 impl<T: Serialize + for<'de> Deserialize<'de>, P> Sub for Refinement<T, P>
-    where
-        T: Sub<Output = T>,
-        P: Predicate<T>,
+where
+    T: Sub<Output = T>,
+    P: Predicate<T>,
 {
     type Output = Option<Self>;
     fn sub(self, rhs: Self) -> Self::Output {
@@ -418,9 +436,9 @@ impl<T: Serialize + for<'de> Deserialize<'de>, P> Sub for Refinement<T, P>
 }
 
 impl<T: Serialize + for<'de> Deserialize<'de>, P> fmt::Display for Refinement<T, P>
-    where
-        T: fmt::Display,
-        P: Predicate<T>,
+where
+    T: fmt::Display,
+    P: Predicate<T>,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         self.0.fmt(f)
@@ -428,9 +446,9 @@ impl<T: Serialize + for<'de> Deserialize<'de>, P> fmt::Display for Refinement<T,
 }
 
 impl<T, P> Refinement<T, P>
-    where
-        T: Clone,
-        P: Predicate<T>,
+where
+    T: Clone,
+    P: Predicate<T>,
 {
     /// Retrieve the underlying value without consuming `self`.
     ///
@@ -459,9 +477,9 @@ impl<T, P> Refinement<T, P>
 }
 
 impl<T, P> Refinement<T, P>
-    where
-        T: Copy,
-        P: Predicate<T>,
+where
+    T: Copy,
+    P: Predicate<T>,
 {
     /// Retrieve the underlying value for [`Copy`] types without consuming `self`.
     ///
@@ -489,8 +507,8 @@ impl<T, P> Refinement<T, P>
 }
 
 impl<T, P> Borrow<T> for Refinement<T, P>
-    where
-        P: Predicate<T>,
+where
+    P: Predicate<T>,
 {
     fn borrow(&self) -> &T {
         &self.0
@@ -498,8 +516,8 @@ impl<T, P> Borrow<T> for Refinement<T, P>
 }
 
 impl<T, P> AsRef<T> for Refinement<T, P>
-    where
-        P: Predicate<T>,
+where
+    P: Predicate<T>,
 {
     fn as_ref(&self) -> &T {
         &self.0
@@ -507,9 +525,9 @@ impl<T, P> AsRef<T> for Refinement<T, P>
 }
 
 impl<T, P, I> Index<I> for Refinement<T, P>
-    where
-        T: Index<I>,
-        P: Predicate<T>,
+where
+    T: Index<I>,
+    P: Predicate<T>,
 {
     type Output = T::Output;
     fn index(&self, index: I) -> &Self::Output {
@@ -518,9 +536,9 @@ impl<T, P, I> Index<I> for Refinement<T, P>
 }
 
 impl<T, P, B> RangeBounds<B> for Refinement<T, P>
-    where
-        T: RangeBounds<B>,
-        P: Predicate<T>,
+where
+    T: RangeBounds<B>,
+    P: Predicate<T>,
 {
     fn start_bound(&self) -> Bound<&B> {
         self.0.start_bound()

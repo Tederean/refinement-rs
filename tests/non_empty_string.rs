@@ -28,3 +28,44 @@ fn clone_equality() {
     let x = NonEmptyString::new(String::from("Hello")).unwrap();
     assert_eq!(x, x.clone())
 }
+
+#[cfg(feature = "serde")]
+#[test]
+fn serde_pass() {
+    #[derive(serde::Serialize, serde::Deserialize, PartialEq, Debug)]
+    struct TestSerde {
+        value: NonEmptyString,
+    }
+
+    let x = TestSerde {
+        value: NonEmptyString::new(String::from("Hello")).unwrap(),
+    };
+
+    let json = serde_json::to_string(&x).unwrap();
+
+    let y = serde_json::from_str::<TestSerde>(&json).unwrap();
+
+    assert_eq!(x, y)
+}
+
+#[cfg(feature = "serde")]
+#[test]
+fn serde_fail() {
+    #[derive(serde::Serialize, serde::Deserialize, PartialEq, Debug)]
+    struct NoRefinement {
+        value: String,
+    }
+
+    #[derive(serde::Serialize, serde::Deserialize, PartialEq, Debug)]
+    struct WithRefinement {
+        value: NonEmptyString,
+    }
+
+    let x = NoRefinement {
+        value: String::from(""),
+    };
+
+    let json = serde_json::to_string(&x).unwrap();
+
+    serde_json::from_str::<WithRefinement>(&json).unwrap_err();
+}

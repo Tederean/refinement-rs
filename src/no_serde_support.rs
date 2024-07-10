@@ -63,8 +63,8 @@ pub trait Predicate<T> {
 pub struct Refinement<T, P>(T, PhantomData<P>);
 
 impl<T, P> Refinement<T, P>
-    where
-        P: Predicate<T>,
+where
+    P: Predicate<T>,
 {
     /// Create a refined value from the underlying type `T`.
     ///
@@ -126,8 +126,8 @@ impl<T, P> Refinement<T, P>
 }
 
 impl<T, P> fmt::Debug for Refinement<T, P>
-    where
-        T: fmt::Debug
+where
+    T: fmt::Debug,
 {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> fmt::Result {
         f.debug_tuple("Refinement")
@@ -154,9 +154,9 @@ impl<T, P> core::ops::Deref for Refinement<T, P> {
 }
 
 impl<T, P> Add<T> for Refinement<T, P>
-    where
-        T: Add<Output = T>,
-        P: Predicate<T>,
+where
+    T: Add<Output = T>,
+    P: Predicate<T>,
 {
     type Output = Option<Self>;
     fn add(self, rhs: T) -> Self::Output {
@@ -165,9 +165,9 @@ impl<T, P> Add<T> for Refinement<T, P>
 }
 
 impl<T, P> Add for Refinement<T, P>
-    where
-        T: Add<Output = T>,
-        P: Predicate<T>,
+where
+    T: Add<Output = T>,
+    P: Predicate<T>,
 {
     type Output = Option<Self>;
     fn add(self, rhs: Self) -> Self::Output {
@@ -176,9 +176,9 @@ impl<T, P> Add for Refinement<T, P>
 }
 
 impl<T, P> BitAnd<T> for Refinement<T, P>
-    where
-        T: BitAnd<Output = T>,
-        P: Predicate<T>,
+where
+    T: BitAnd<Output = T>,
+    P: Predicate<T>,
 {
     type Output = Option<Self>;
     fn bitand(self, rhs: T) -> Self::Output {
@@ -187,9 +187,9 @@ impl<T, P> BitAnd<T> for Refinement<T, P>
 }
 
 impl<T, P> BitAnd for Refinement<T, P>
-    where
-        T: BitAnd<Output = T>,
-        P: Predicate<T>,
+where
+    T: BitAnd<Output = T>,
+    P: Predicate<T>,
 {
     type Output = Option<Self>;
     fn bitand(self, rhs: Self) -> Self::Output {
@@ -198,9 +198,9 @@ impl<T, P> BitAnd for Refinement<T, P>
 }
 
 impl<T, P> BitOr<T> for Refinement<T, P>
-    where
-        T: BitOr<Output = T>,
-        P: Predicate<T>,
+where
+    T: BitOr<Output = T>,
+    P: Predicate<T>,
 {
     type Output = Option<Self>;
     fn bitor(self, rhs: T) -> Self::Output {
@@ -209,9 +209,9 @@ impl<T, P> BitOr<T> for Refinement<T, P>
 }
 
 impl<T, P> BitOr for Refinement<T, P>
-    where
-        T: BitOr<Output = T>,
-        P: Predicate<T>,
+where
+    T: BitOr<Output = T>,
+    P: Predicate<T>,
 {
     type Output = Option<Self>;
     fn bitor(self, rhs: Self) -> Self::Output {
@@ -220,9 +220,9 @@ impl<T, P> BitOr for Refinement<T, P>
 }
 
 impl<T, P> BitXor<T> for Refinement<T, P>
-    where
-        T: BitXor<Output = T>,
-        P: Predicate<T>,
+where
+    T: BitXor<Output = T>,
+    P: Predicate<T>,
 {
     type Output = Option<Self>;
     fn bitxor(self, rhs: T) -> Self::Output {
@@ -231,9 +231,9 @@ impl<T, P> BitXor<T> for Refinement<T, P>
 }
 
 impl<T, P> BitXor for Refinement<T, P>
-    where
-        T: BitXor<Output = T>,
-        P: Predicate<T>,
+where
+    T: BitXor<Output = T>,
+    P: Predicate<T>,
 {
     type Output = Option<Self>;
     fn bitxor(self, rhs: Self) -> Self::Output {
@@ -242,9 +242,9 @@ impl<T, P> BitXor for Refinement<T, P>
 }
 
 impl<T, P> Div<T> for Refinement<T, P>
-    where
-        T: Div<Output = T>,
-        P: Predicate<T>,
+where
+    T: Div<Output = T>,
+    P: Predicate<T>,
 {
     type Output = Option<Self>;
     fn div(self, rhs: T) -> Self::Output {
@@ -253,9 +253,9 @@ impl<T, P> Div<T> for Refinement<T, P>
 }
 
 impl<T, P> Div for Refinement<T, P>
-    where
-        T: Div<Output = T>,
-        P: Predicate<T>,
+where
+    T: Div<Output = T>,
+    P: Predicate<T>,
 {
     type Output = Option<Self>;
     fn div(self, rhs: Self) -> Self::Output {
@@ -264,9 +264,9 @@ impl<T, P> Div for Refinement<T, P>
 }
 
 impl<T, P> Mul<T> for Refinement<T, P>
-    where
-        T: Mul<Output = T>,
-        P: Predicate<T>,
+where
+    T: Mul<Output = T>,
+    P: Predicate<T>,
 {
     type Output = Option<Self>;
     fn mul(self, rhs: T) -> Self::Output {
@@ -275,9 +275,9 @@ impl<T, P> Mul<T> for Refinement<T, P>
 }
 
 impl<T, P> Mul for Refinement<T, P>
-    where
-        T: Mul<Output = T>,
-        P: Predicate<T>,
+where
+    T: Mul<Output = T>,
+    P: Predicate<T>,
 {
     type Output = Option<Self>;
     fn mul(self, rhs: Self) -> Self::Output {
@@ -286,9 +286,9 @@ impl<T, P> Mul for Refinement<T, P>
 }
 
 impl<T, P> Neg for Refinement<T, P>
-    where
-        T: Neg<Output = T>,
-        P: Predicate<T>,
+where
+    T: Neg<Output = T>,
+    P: Predicate<T>,
 {
     type Output = Option<Self>;
     fn neg(self) -> Self::Output {
@@ -297,9 +297,9 @@ impl<T, P> Neg for Refinement<T, P>
 }
 
 impl<T, P> Not for Refinement<T, P>
-    where
-        T: Not<Output = T>,
-        P: Predicate<T>,
+where
+    T: Not<Output = T>,
+    P: Predicate<T>,
 {
     type Output = Option<Self>;
     fn not(self) -> Self::Output {
@@ -308,9 +308,9 @@ impl<T, P> Not for Refinement<T, P>
 }
 
 impl<T, P> Rem<T> for Refinement<T, P>
-    where
-        T: Rem<Output = T>,
-        P: Predicate<T>,
+where
+    T: Rem<Output = T>,
+    P: Predicate<T>,
 {
     type Output = Option<Self>;
     fn rem(self, rhs: T) -> Self::Output {
@@ -319,9 +319,9 @@ impl<T, P> Rem<T> for Refinement<T, P>
 }
 
 impl<T, P> Rem for Refinement<T, P>
-    where
-        T: Rem<Output = T>,
-        P: Predicate<T>,
+where
+    T: Rem<Output = T>,
+    P: Predicate<T>,
 {
     type Output = Option<Self>;
     fn rem(self, rhs: Self) -> Self::Output {
@@ -330,9 +330,9 @@ impl<T, P> Rem for Refinement<T, P>
 }
 
 impl<T, P> Shl<T> for Refinement<T, P>
-    where
-        T: Shl<Output = T>,
-        P: Predicate<T>,
+where
+    T: Shl<Output = T>,
+    P: Predicate<T>,
 {
     type Output = Option<Self>;
     fn shl(self, rhs: T) -> Self::Output {
@@ -341,9 +341,9 @@ impl<T, P> Shl<T> for Refinement<T, P>
 }
 
 impl<T, P> Shl for Refinement<T, P>
-    where
-        T: Shl<Output = T>,
-        P: Predicate<T>,
+where
+    T: Shl<Output = T>,
+    P: Predicate<T>,
 {
     type Output = Option<Self>;
     fn shl(self, rhs: Self) -> Self::Output {
@@ -352,9 +352,9 @@ impl<T, P> Shl for Refinement<T, P>
 }
 
 impl<T, P> Shr<T> for Refinement<T, P>
-    where
-        T: Shr<Output = T>,
-        P: Predicate<T>,
+where
+    T: Shr<Output = T>,
+    P: Predicate<T>,
 {
     type Output = Option<Self>;
     fn shr(self, rhs: T) -> Self::Output {
@@ -363,9 +363,9 @@ impl<T, P> Shr<T> for Refinement<T, P>
 }
 
 impl<T, P> Shr for Refinement<T, P>
-    where
-        T: Shr<Output = T>,
-        P: Predicate<T>,
+where
+    T: Shr<Output = T>,
+    P: Predicate<T>,
 {
     type Output = Option<Self>;
     fn shr(self, rhs: Self) -> Self::Output {
@@ -374,9 +374,9 @@ impl<T, P> Shr for Refinement<T, P>
 }
 
 impl<T, P> Sub<T> for Refinement<T, P>
-    where
-        T: Sub<Output = T>,
-        P: Predicate<T>,
+where
+    T: Sub<Output = T>,
+    P: Predicate<T>,
 {
     type Output = Option<Self>;
     fn sub(self, rhs: T) -> Self::Output {
@@ -385,9 +385,9 @@ impl<T, P> Sub<T> for Refinement<T, P>
 }
 
 impl<T, P> Sub for Refinement<T, P>
-    where
-        T: Sub<Output = T>,
-        P: Predicate<T>,
+where
+    T: Sub<Output = T>,
+    P: Predicate<T>,
 {
     type Output = Option<Self>;
     fn sub(self, rhs: Self) -> Self::Output {
@@ -396,9 +396,9 @@ impl<T, P> Sub for Refinement<T, P>
 }
 
 impl<T, P> fmt::Display for Refinement<T, P>
-    where
-        T: fmt::Display,
-        P: Predicate<T>,
+where
+    T: fmt::Display,
+    P: Predicate<T>,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         self.0.fmt(f)
@@ -406,9 +406,9 @@ impl<T, P> fmt::Display for Refinement<T, P>
 }
 
 impl<T, P> crate::Refinement<T, P>
-    where
-        T: Clone,
-        P: crate::Predicate<T>,
+where
+    T: Clone,
+    P: crate::Predicate<T>,
 {
     /// Retrieve the underlying value without consuming `self`.
     ///
@@ -437,9 +437,9 @@ impl<T, P> crate::Refinement<T, P>
 }
 
 impl<T, P> crate::Refinement<T, P>
-    where
-        T: Copy,
-        P: crate::Predicate<T>,
+where
+    T: Copy,
+    P: crate::Predicate<T>,
 {
     /// Retrieve the underlying value for [`Copy`] types without consuming `self`.
     ///
@@ -467,8 +467,8 @@ impl<T, P> crate::Refinement<T, P>
 }
 
 impl<T, P> Borrow<T> for crate::Refinement<T, P>
-    where
-        P: crate::Predicate<T>,
+where
+    P: crate::Predicate<T>,
 {
     fn borrow(&self) -> &T {
         &self.0
@@ -476,8 +476,8 @@ impl<T, P> Borrow<T> for crate::Refinement<T, P>
 }
 
 impl<T, P> AsRef<T> for crate::Refinement<T, P>
-    where
-        P: crate::Predicate<T>,
+where
+    P: crate::Predicate<T>,
 {
     fn as_ref(&self) -> &T {
         &self.0
@@ -485,9 +485,9 @@ impl<T, P> AsRef<T> for crate::Refinement<T, P>
 }
 
 impl<T, P, I> Index<I> for crate::Refinement<T, P>
-    where
-        T: Index<I>,
-        P: crate::Predicate<T>,
+where
+    T: Index<I>,
+    P: crate::Predicate<T>,
 {
     type Output = T::Output;
     fn index(&self, index: I) -> &Self::Output {
@@ -496,9 +496,9 @@ impl<T, P, I> Index<I> for crate::Refinement<T, P>
 }
 
 impl<T, P, B> RangeBounds<B> for crate::Refinement<T, P>
-    where
-        T: RangeBounds<B>,
-        P: crate::Predicate<T>,
+where
+    T: RangeBounds<B>,
+    P: crate::Predicate<T>,
 {
     fn start_bound(&self) -> Bound<&B> {
         self.0.start_bound()

@@ -4,6 +4,7 @@ version = "0.6.0"
 authors = ["Brady Dean <2bdkid@gmail.com>", "Joey Ezechiels <joey.ezechiels@gmail.com>"]
 edition = "2018"
 readme = "README.md"
+keywords = ["no_std"]
 repository = "https://github.com/2bdkid/refinement"
 description = "Convenient creation of type-safe refinement types."
 license = "MIT"
@@ -12,6 +13,10 @@ license = "MIT"
 
 [dependencies]
 serde = { version = "1", optional = true, features = ["derive"] }
+
+[dev-dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1" }
 
 [features]
 default = ["std"]
